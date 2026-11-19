@@ -14,6 +14,9 @@ To start a web server for the application, run:
 
     lein ring server
 
+## DB Migrations
+- [https://github.com/abogoyavlensky/automigrate](automigrate)
+
 ## License
 
 Copyright © 2026 FIXME
