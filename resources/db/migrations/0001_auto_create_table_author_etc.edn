@@ -1,0 +1,30 @@
+({:action :create-table,
+  :model-name :author,
+  :fields
+  {:id {:primary-key true, :type :serial},
+   :name {:unique true, :type :text}}}
+ {:action :create-table,
+  :model-name :feed,
+  :fields
+  {:id {:primary-key true, :type :serial},
+   :url {:null false, :type :text}}}
+ {:action :create-table,
+  :model-name :entry,
+  :fields
+  {:updated-at {:type :timestamptz},
+   :published-at {:null false, :type :timestamptz},
+   :title {:null false, :type :text},
+   :decription {:type :text},
+   :link {:null false, :type :text},
+   :id {:primary-key true, :type :serial},
+   :author-id {:foreign-key :author/id, :type :integer},
+   :contents {:type :text},
+   :feed-id {:foreign-key :feed/id, :type :integer}}}
+ {:action :create-index,
+  :index-name :entry-updated-at-idx,
+  :model-name :entry,
+  :options {:fields [:updated-at], :type :btree}}
+ {:action :create-index,
+  :index-name :entry-published-at-idx,
+  :model-name :entry,
+  :options {:fields [:published-at], :type :btree}})

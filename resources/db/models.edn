@@ -1,0 +1,26 @@
+{:feed [[:id :serial {:primary-key true}]
+        [:url :text {:null false}]]
+
+ :author [[:id :serial {:primary-key true}]
+          [:name :text {:unique true}]]
+
+ :entry {:fields [[:id :serial {:primary-key true}]
+                  [:feed-id :integer {:foreign-key :feed/id}]
+                  [:author-id :integer {:foreign-key :author/id}]
+                  [:link :text {:null false}]
+                  [:title :text {:null false}]
+                  [:decription :text]
+                  [:contents :text]
+                  [:published-at :timestamptz {:null false}]
+                  [:updated-at :timestamptz]]
+         :indexes [[:entry-published-at-idx :btree {:fields [:published-at]}]
+                   [:entry-updated-at-idx :btree {:fields [:updated-at]}]]}}
+
+;(:author
+; :link
+; :publishedDate
+; :title
+; :updatedDate
+; :uri
+; :description
+; :contents)
