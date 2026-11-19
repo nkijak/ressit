@@ -15,3 +15,11 @@ create-migration: docker-start resources/db/models.edn
 
 docker-start:
 	docker compose up -d
+
+dev: docker-start
+	RESSIT_DB_PASSWORD=${dbpass} \
+										 lein ring server-headless
+
+repl:
+	RESSIT_DB_PASSWORD=${dbpass} \
+										 lein repl

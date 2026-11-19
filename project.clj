@@ -11,7 +11,8 @@
                  [dev.data-star.clojure/ring-malli-schemas "1.0.0-RC13"]
                  [hiccup "2.0.0"]
                  [prolefeed "0.1-SNAPSHOT"]
-                 [org.postgresql/postgresql "42.7.14"]]
+                 [org.postgresql/postgresql "42.7.14"]
+                 [com.github.igrishaev/pg2-core "0.1.52"]]
   :plugins [[lein-ring "0.12.5"]]
   :ring {:handler ressit.handler/app}
   :profiles

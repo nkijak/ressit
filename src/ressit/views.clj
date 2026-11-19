@@ -26,37 +26,35 @@
             [:main content]
             [:footer "Copyright (c) 2026 Author. All Rights Reserved."]]]))
 
-(defn index-page []
-  (h/html
-   [:head
-    [:title "Ressit"]]
-   [:body
-    [:h1 "Hello World"]]))
-
-(defn entry-block [entry]
-  [:article
-   [:h2 (:title entry)]
-   [:p (:contents entry)
-    [:cite (:author entry)]
-    [:br]
-    [:a {:href (:link entry)} "more"]]
-   [:footer.stats
+(defn entry-block
+  ([entry] (entry-block entry nil))
+  ([entry attribution]
+   [:article
     [:div
-     [:a {:href "comments"}
-      [:i.fa.fa-comments {:aria-hidden "true"}]]
-     [:small 0]]
-    [:div
-     [:a {:href "views"}
-      [:i.fa.fa-eye {:aria-hidden "true"}]]
-     [:small 0]]
-    [:div
-     [:a {:href "upvotes"}
-      [:i.fa.fa-arrow-up {:aria-hidden "true"}]]
-     [:small 0]]
-    [:div
-     [:a {:href "downvotes"}
-      [:i.fa.fa-arrow-down {:aria-hidden "true"}]]
-     [:small 0]]]])
+     (when (some? attribution) [:kbd attribution])
+     [:i.fa.fa-hourglass-1 {:aria-hidden "true"}] [:small (get entry :published_at (get entry :publishedDate))]]
+    [:h2 (:title entry)]
+    [:p (:contents entry)
+     [:cite (:author entry)]
+     [:br]
+     [:a {:href (:link entry)} "more"]]
+    [:footer.stats
+     [:div
+      [:a {:href "comments"}
+       [:i.fa.fa-comments {:aria-hidden "true"}]]
+      [:small 0]]
+     [:div
+      [:a {:href "views"}
+       [:i.fa.fa-eye {:aria-hidden "true"}]]
+      [:small 0]]
+     [:div
+      [:a {:href "upvotes"}
+       [:i.fa.fa-arrow-up {:aria-hidden "true"}]]
+      [:small 0]]
+     [:div
+      [:a {:href "downvotes"}
+       [:i.fa.fa-arrow-down {:aria-hidden "true"}]]
+      [:small 0]]]]))
 
 (defn engadget-page [refreshf]
   (let [feed (refreshf)]
@@ -66,4 +64,12 @@
                  [:div
                   (map entry-block (:entries feed))])))
 
+(defn- tag-from-url [url]
+  (when (some? url)
+    (.getHost (java.net.URL. url))))
 
+(defn index-page [entries]
+  (ressit-page "Latest"
+               [:h1 "Today"]
+               [:div
+                (map #(entry-block %1 (tag-from-url (get %1 :url))) entries)]))
