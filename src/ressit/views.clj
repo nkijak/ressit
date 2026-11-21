@@ -19,7 +19,8 @@
                               grid-column-gap: 10px;
                               grid-row-gap: 0px;
                             }
-                            ")]]
+                            ")]
+            [:script {:type "module" :src "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.5/bundles/datastar.js"}]]
 
            [:body
             [:header "ressit blah blah"]
@@ -73,3 +74,19 @@
                [:h1 "Today"]
                [:div
                 (map #(entry-block %1 (tag-from-url (get %1 :url))) entries)]))
+
+(defn admin-add-rss []
+  (ressit-page "New Feed"
+               [:section
+                [:form#feed_info
+                 [:h2 "Add new Feed"]
+
+                 [:label {:for "url"} "URL"]
+                 [:input#url {:type "text" :name "url" :placeholder "https://whatever.com/rss.xml"}]
+
+                 [:label {:for "name"} "Tag Name"]
+                 [:input#name {:type "text" :name "name" :placeholder "whatever"}]
+                 [:button {:data-on:click "@post('/admin/rss/add', {contentType: 'form'})"} "Fetch"]]]
+               [:section#preview
+                [:div "Display here"]]))
+
