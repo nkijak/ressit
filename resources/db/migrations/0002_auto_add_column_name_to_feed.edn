@@ -1,0 +1,4 @@
+({:action :add-column,
+  :field-name :name,
+  :model-name :feed,
+  :options {:type :text}})

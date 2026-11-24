@@ -1,5 +1,6 @@
 {:feed [[:id :serial {:primary-key true}]
-        [:url :text {:null false}]]
+        [:url :text {:null false}]
+        [:name :text]]
 
  :author [[:id :serial {:primary-key true}]
           [:name :text {:unique true}]]

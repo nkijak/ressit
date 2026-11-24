@@ -12,6 +12,13 @@
    :password (System/getenv "RESSIT_DB_PASSWORD")
    :database "ressit"})
 
+(defn save-feed! [url name]
+  (pg/with-pool [pool config]
+    (pg/execute pool "
+          insert into feed (url, name) values ($1, $2) returning id
+              "
+                {:params [url name]})))
+
 (defn get-feeds
   ([] (get-feeds 0 0))
   ([page limit]
@@ -72,7 +79,7 @@
 (defn get-entries []
   (pg/with-pool [pool config]
     (pg/execute pool "
-      select e.*, f.url from entry e 
+      select e.*, f.url, f.name from entry e 
       join feed f on e.feed_id = f.id 
       where published_at >= date_trunc('day', now()) 
       order by published_at desc

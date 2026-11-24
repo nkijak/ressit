@@ -1,5 +1,6 @@
 (ns ressit.views
-  (:require [hiccup2.core :as h]))
+  (:require [hiccup2.core :as h]
+            [hiccup.form :as f]))
 
 (defn ressit-page [title & content]
   (h/html {:escape-strings? false} (h/raw "<!DOCTYPE html>")
@@ -59,11 +60,11 @@
 
 (defn engadget-page [refreshf]
   (let [feed (refreshf)]
-    (ressit-page (:title feed)
-                 [:h1 (:title feed)]
-                 [:p (:description feed)]
-                 [:div
-                  (map entry-block (:entries feed))])))
+    (apply ressit-page (:title feed)
+           [:h1 (:title feed)]
+           [:p (:description feed)]
+           [:div
+            (map entry-block (:entries feed))])))
 
 (defn- tag-from-url [url]
   (when (some? url)
@@ -73,11 +74,11 @@
   (ressit-page "Latest"
                [:h1 "Today"]
                [:div
-                (map #(entry-block %1 (tag-from-url (get %1 :url))) entries)]))
+                (map #(entry-block %1 (get %1 :name)) entries)]))
 
-(defn admin-add-rss []
+(defn admin-add-rss [anti-forgery-token]
   (ressit-page "New Feed"
-               [:section
+               [:section#control
                 [:form#feed_info
                  [:h2 "Add new Feed"]
 
@@ -86,7 +87,22 @@
 
                  [:label {:for "name"} "Tag Name"]
                  [:input#name {:type "text" :name "name" :placeholder "whatever"}]
+                 (f/hidden-field "__anti-forgery-token" anti-forgery-token)
                  [:button {:data-on:click "@post('/admin/rss/add', {contentType: 'form'})"} "Fetch"]]]
                [:section#preview
                 [:div "Display here"]]))
+
+; these are strings when they come from form-params and keywords when coming as params
+(defn preview-rss-feed [name url anti-forgery-token {:keys [title description entries]}]
+  (h/html [:article#preview
+           [:h1 title]
+           [:p description]
+           [:div
+            (map #(entry-block %1 name) (take 3 entries))]]
+          [:section#control
+           [:form {:action "/admin/rss" :method "post"}
+            (f/hidden-field "__anti-forgery-token" anti-forgery-token)
+            (f/hidden-field "name" name)
+            (f/hidden-field "url" url)
+            [:input {:type "submit" :value (str "Save " name)}]]]))
 
