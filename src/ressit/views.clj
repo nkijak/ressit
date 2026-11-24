@@ -1,6 +1,7 @@
 (ns ressit.views
   (:require [hiccup2.core :as h]
-            [hiccup.form :as f]))
+            [hiccup.form :as f]
+            [clojure.string :as str]))
 
 (defn ressit-page [title & content]
   (h/html {:escape-strings? false} (h/raw "<!DOCTYPE html>")
@@ -36,7 +37,7 @@
      (when (some? attribution) [:kbd attribution])
      [:i.fa.fa-hourglass-1 {:aria-hidden "true"}] [:small (get entry :published_at (get entry :publishedDate))]]
     [:h2 (:title entry)]
-    [:p (:contents entry)
+    [:p (first (filter #(not (str/blank? %)) (map entry [:contents :decription])))
      [:cite (:author entry)]
      [:br]
      [:a {:href (:link entry)} "more"]]
