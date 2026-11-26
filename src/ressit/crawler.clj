@@ -13,10 +13,10 @@
       (when (> entryts feedts)
         (db/save-entry id entry)))))
 
-; TODO i need the top level information stored too -- probably on feed creation
 (defn start-consuming-feeds []
   (doseq [feed (db/get-feeds)]
     (println "getting " (:url feed))
     (->> (pf/fetch (:url feed))
          (store-newer-entries feed))))
+
 

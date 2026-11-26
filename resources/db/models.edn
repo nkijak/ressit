@@ -1,6 +1,9 @@
-{:feed [[:id :serial {:primary-key true}]
-        [:url :text {:null false}]
-        [:name :text]]
+{:feed {:fields [[:id :serial {:primary-key true}]
+                 [:url :text {:null false}]
+                 [:name :text {:unique true :null false}]
+                 [:title :text {:null false :default "unknown"}]
+                 [:description :text {:null false :default "missing"}]]
+        :indexes [[:feed-name-idx :btree {:fields [:name]}]]}
 
  :author [[:id :serial {:primary-key true}]
           [:name :text {:unique true}]]
@@ -10,7 +13,7 @@
                   [:author-id :integer {:foreign-key :author/id}]
                   [:link :text {:null false}]
                   [:title :text {:null false}]
-                  [:decription :text]
+                  [:description :text]
                   [:contents :text]
                   [:published-at :timestamptz {:null false}]
                   [:updated-at :timestamptz]]

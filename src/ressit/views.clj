@@ -34,10 +34,10 @@
   ([entry attribution]
    [:article
     [:div
-     (when (some? attribution) [:kbd attribution])
+     (when (some? attribution) [:a {:href (str "/rss/" attribution)} [:kbd attribution]])
      [:i.fa.fa-hourglass-1 {:aria-hidden "true"}] [:small (get entry :published_at (get entry :publishedDate))]]
     [:h2 (:title entry)]
-    [:p (first (filter #(not (str/blank? %)) (map entry [:contents :decription])))
+    [:p (first (filter #(not (str/blank? %)) (map entry [:contents :description])))
      [:cite (:author entry)]
      [:br]
      [:a {:href (:link entry)} "more"]]
@@ -59,17 +59,12 @@
        [:i.fa.fa-arrow-down {:aria-hidden "true"}]]
       [:small 0]]]]))
 
-(defn engadget-page [refreshf]
-  (let [feed (refreshf)]
-    (apply ressit-page (:title feed)
-           [:h1 (:title feed)]
-           [:p (:description feed)]
-           [:div
-            (map entry-block (:entries feed))])))
-
-(defn- tag-from-url [url]
-  (when (some? url)
-    (.getHost (java.net.URL. url))))
+(defn feed-page [name feed]
+  (ressit-page (:title feed)
+               [:h1 (:title feed)]
+               [:p (:description feed)]
+               [:div
+                (map #(entry-block % name) (:entries feed))]))
 
 (defn index-page [entries]
   (ressit-page "Latest"
@@ -84,16 +79,21 @@
                  [:h2 "Add new Feed"]
 
                  [:label {:for "url"} "URL"]
-                 [:input#url {:type "text" :name "url" :placeholder "https://whatever.com/rss.xml"}]
+                 [:input#url {:type "text"
+                              :name "url"
+                              :placeholder "https://whatever.com/rss.xml"
+                              :data-bind "url"}]
 
                  [:label {:for "name"} "Tag Name"]
-                 [:input#name {:type "text" :name "name" :placeholder "whatever"}]
+                 [:input#name {:type "text"
+                               :name "name"
+                               :placeholder "whatever"
+                               :data-bind "name"}]
                  (f/hidden-field "__anti-forgery-token" anti-forgery-token)
-                 [:button {:data-on:click "@post('/admin/rss/add', {contentType: 'form'})"} "Fetch"]]]
-               [:section#preview
-                [:div "Display here"]]))
+                 [:button {:data-on:click "$preview=true; @post('/admin/rss/add', {contentType: 'form'})"
+                           :data-attr:disabled "$url == '' || $name == ''"} "Fetch"]]]
+               [:article#preview {:data-attr:aria-busy "$preview ? String($preview) : false"}]))
 
-; these are strings when they come from form-params and keywords when coming as params
 (defn preview-rss-feed [name url anti-forgery-token {:keys [title description entries]}]
   (h/html [:article#preview
            [:h1 title]
@@ -105,5 +105,7 @@
             (f/hidden-field "__anti-forgery-token" anti-forgery-token)
             (f/hidden-field "name" name)
             (f/hidden-field "url" url)
+            (f/hidden-field "title" title)
+            (f/hidden-field "description" description)
             [:input {:type "submit" :value (str "Save " name)}]]]))
 
