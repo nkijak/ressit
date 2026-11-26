@@ -14,7 +14,7 @@
                  [org.postgresql/postgresql "42.7.14"]
                  [com.github.igrishaev/pg2-core "0.1.52"]]
   :plugins [[lein-ring "0.12.5"]]
-  :ring {:handler ressit.handler/app}
+  :ring {:handler ressit.handler/app :nrepl {:start? true}}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.2"]]}

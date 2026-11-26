@@ -1,0 +1,10 @@
+({:action :alter-column,
+  :field-name :name,
+  :model-name :feed,
+  :options {:unique true, :null false, :type :text},
+  :changes
+  {:unique {:from :EMPTY, :to true}, :null {:from :EMPTY, :to false}}}
+ {:action :create-index,
+  :index-name :feed-name-idx,
+  :model-name :feed,
+  :options {:fields [:name], :type :btree}})

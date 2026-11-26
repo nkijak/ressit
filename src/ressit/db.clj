@@ -12,6 +12,13 @@
    :password (System/getenv "RESSIT_DB_PASSWORD")
    :database "ressit"})
 
+(defn save-feed! [url name]
+  (pg/with-pool [pool config]
+    (pg/execute pool "
+          insert into feed (url, name) values ($1, $2) returning id
+              "
+                {:params [url name]})))
+
 (defn get-feeds
   ([] (get-feeds 0 0))
   ([page limit]
@@ -40,7 +47,7 @@
 (defn save-entry [feed-id entry]
   (pg/with-pool [pool config]
     (pg/execute pool "
-            insert into entry (feed_id, link, title, decription, contents, published_at, updated_at)
+            insert into entry (feed_id, link, title, description, contents, published_at, updated_at)
             values ($1, $2, $3, $4, $5, $6, $7)
                 "
                 {:params [feed-id
@@ -56,7 +63,7 @@
 ;                  [:author-id :integer {:foreign-key :author/id}]
 ;                  [:link :text {:null false}]
 ;                  [:title :text {:null false}]
-;                  [:decription :text]
+;                  [:description :text]
 ;                  [:contents :text]
 ;                  [:published-at :timestamptz {:null false}]
 ;                  [:updated-at :timestamptz]]
@@ -72,8 +79,22 @@
 (defn get-entries []
   (pg/with-pool [pool config]
     (pg/execute pool "
-      select e.*, f.url from entry e 
+      select e.*, f.url, f.name from entry e 
       join feed f on e.feed_id = f.id 
       where published_at >= date_trunc('day', now()) 
       order by published_at desc
     ")))
+
+(defn feed-with-entries
+  ([name] (feed-with-entries name 20))
+  ([name entry-count]
+   (println name entry-count)
+   (pg/with-pool [pool config]
+     (pg/execute pool "
+          select f.title as feed_title, f.description as feed_description, e.* from feed f
+          join entry e on e.feed_id = f.id
+          where f.name = $1
+          order by e.published_at desc
+          limit $2
+      "
+                 {:params [name entry-count]}))))

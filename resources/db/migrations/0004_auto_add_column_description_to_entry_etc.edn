@@ -1,0 +1,13 @@
+({:action :add-column,
+  :field-name :description,
+  :model-name :entry,
+  :options {:type :text}}
+ {:action :drop-column, :field-name :decription, :model-name :entry}
+ {:action :add-column,
+  :field-name :description,
+  :model-name :feed,
+  :options {:null false, :default "missing", :type :text}}
+ {:action :add-column,
+  :field-name :title,
+  :model-name :feed,
+  :options {:null false, :default "unknown", :type :text}})
